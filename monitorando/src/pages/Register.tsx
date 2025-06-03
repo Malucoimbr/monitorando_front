@@ -32,7 +32,7 @@ const registerSchema = z.object({
   email: z.string().email("Email inválido"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(6, "Confirme sua senha"),
-  role: z.enum(["student", "professor"] as const),
+  role: z.enum(["STUDENT", "PROFESSOR"] as const),
 }).refine(data => data.password === data.confirmPassword, {
   message: "As senhas não conferem",
   path: ["confirmPassword"]
@@ -51,28 +51,40 @@ const Register = () => {
       email: "",
       password: "",
       confirmPassword: "",
-      role: "student"
+      role: "STUDENT"
     }
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
     setIsSubmitting(true);
     try {
-      console.log("Form data:", data);
-      
-      // In a real app, we would register the user here
-      
-      // Navigate to the appropriate dashboard based on role
-      if (data.role === "student") {
-        navigate("/dashboard/student");
-      } else {
-        navigate("/dashboard/professor");
+      const response = await fetch("http://localhost:8080/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: data.name,
+          surname: data.name,
+          email: data.email,
+          password: data.password,
+          role: data.role
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao registrar usuário");
       }
-      
+
+      const result = await response.json();
+
       toast({
         title: "Cadastro realizado com sucesso!",
         description: `Bem-vindo(a), ${data.name}!`,
       });
+
+      navigate(data.role === "STUDENT" ? "/dashboard/student" : "/dashboard/professor");
+
     } catch (error) {
       console.error("Registration error:", error);
       toast({
@@ -84,6 +96,7 @@ const Register = () => {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -201,19 +214,19 @@ const Register = () => {
                         <FormControl>
                           <div className={`
                             flex flex-col items-center justify-center p-4 rounded-lg border-2
-                            ${field.value === "student" 
+                            ${field.value === "STUDENT" 
                               ? "border-monitorando-500 bg-monitorando-50" 
                               : "border-border hover:border-monitorando-300"}
                             transition-all cursor-pointer
                           `}
-                            onClick={() => field.onChange("student")}
+                            onClick={() => field.onChange("STUDENT")}
                           >
                             <RadioGroupItem 
-                              value="student" 
-                              id="student" 
+                              value="STUDENT"
+                              id="STUDENT"
                               className="sr-only"
                             />
-                            <GraduationCap className={`h-8 w-8 mb-2 ${field.value === "student" ? "text-monitorando-500" : "text-muted-foreground"}`} />
+                            <GraduationCap className={`h-8 w-8 mb-2 ${field.value === "STUDENT" ? "text-monitorando-500" : "text-muted-foreground"}`} />
                             <div className="font-medium">Aluno</div>
                           </div>
                         </FormControl>
