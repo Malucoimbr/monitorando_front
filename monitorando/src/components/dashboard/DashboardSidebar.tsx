@@ -63,44 +63,44 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
       title: "Início",
       icon: Home,
       path: "/dashboard/student",
-      role: ["student"],
+      role: ["STUDENT"],
     },
     {
       title: "Minhas Turmas",
       icon: BookOpen,
       path: "/dashboard/student/classes",
-      role: ["student"],
+      role: ["STUDENT"],
     },
     {
       title: "Monitores Disponíveis",
       icon: School,
       path: "/dashboard/student/monitors",
-      role: ["student"],
+      role: ["STUDENT"],
     },
     {
       title: "Minhas Dúvidas",
       icon: HelpCircle,
       path: "/dashboard/student/questions",
-      role: ["student"],
+      role: ["STUDENT"],
       badge: 2,
     },
     {
       title: "Agenda",
       icon: Calendar,
       path: "/dashboard/student/schedule",
-      role: ["student"],
+      role: ["STUDENT"],
     },
     {
       title: "Histórico de Atendimentos",
       icon: History,
       path: "/dashboard/student/history",
-      role: ["student"],
+      role: ["STUDENT"],
     },
     {
       title: "Trocar Visualização",
       icon: LayoutGrid,
       path: "/dashboard/monitor",
-      role: ["student"],
+      role: ["STUDENT"],
       badge: "Monitor",
     },
   ];
@@ -172,13 +172,13 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
       title: "Configurações",
       icon: Settings,
       path: "/dashboard/settings",
-      role: ["student", "professor", "monitor"],
+      role: ["STUDENT", "professor", "monitor"],
     },
   ];
 
   const getMenuItems = () => {
     switch (userRole) {
-      case "student":
+      case "STUDENT":
         return studentMenuItems;
       case "monitor":
         return monitorMenuItems;
@@ -195,7 +195,7 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
 
   const userRoleLabel = () => {
     switch (userRole) {
-      case "student":
+      case "STUDENT":
         return "Aluno";
       case "monitor":
         return "Monitor";
@@ -208,7 +208,7 @@ export function DashboardSidebar({ userRole }: DashboardSidebarProps) {
 
   const userRoleIcon = () => {
     switch (userRole) {
-      case "student":
+      case "STUDENT":
         return <GraduationCap className='h-4 w-4' />;
       case "monitor":
         return <School className='h-4 w-4' />;

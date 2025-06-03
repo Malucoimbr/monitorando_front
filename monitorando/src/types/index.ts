@@ -1,5 +1,5 @@
 
-export type UserRole = 'student' | 'professor' | 'monitor';
+export type UserRole = 'STUDENT' | 'professor' | 'monitor';
 
 export interface User {
   id: string;

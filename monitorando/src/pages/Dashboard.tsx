@@ -39,11 +39,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const Dashboard = () => {
   const { role } = useParams<{ role: string }>();
 
-  const userRole = (role as UserRole) || "student";
+  const userRole = (role as UserRole) || "STUDENT";
 
   const getDashboardTitle = () => {
     switch (userRole) {
-      case "student":
+      case "STUDENT":
         return "Dashboard do Aluno";
       case "monitor":
         return "Dashboard do Monitor";
@@ -892,7 +892,7 @@ const Dashboard = () => {
 
   const renderDashboardContent = () => {
     switch (userRole) {
-      case "student":
+      case "STUDENT":
         return renderStudentDashboard();
       case "monitor":
         return renderMonitorDashboard();

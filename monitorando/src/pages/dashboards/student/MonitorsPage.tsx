@@ -85,7 +85,7 @@ const MonitorsPage = () => {
   };
 
   return (
-    <DashboardLayout userRole="student" title="Monitores Disponíveis">
+    <DashboardLayout userRole="STUDENT" title="Monitores Disponíveis">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {monitors.map((monitor) => (
           <Card key={monitor.id} className="overflow-hidden">

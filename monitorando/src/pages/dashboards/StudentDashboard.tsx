@@ -66,7 +66,7 @@ const StudentDashboard = () => {
   };
 
   return (
-    <DashboardLayout userRole="student" title="Dashboard do Aluno">
+    <DashboardLayout userRole="STUDENT" title="Dashboard do Aluno">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <Card className="card-hover">
           <CardHeader className="pb-2">

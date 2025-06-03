@@ -132,7 +132,7 @@ const SchedulePage = () => {
   };
 
   return (
-    <DashboardLayout userRole="student" title="Agenda">
+    <DashboardLayout userRole="STUDENT" title="Agenda">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
           <Tabs defaultValue={view} onValueChange={setView} className="w-[400px]">

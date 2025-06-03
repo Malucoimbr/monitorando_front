@@ -46,7 +46,7 @@ const ClassesPage = () => {
   ];
 
   return (
-    <DashboardLayout userRole="student" title="Minhas Turmas">
+    <DashboardLayout userRole="STUDENT" title="Minhas Turmas">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold">Turmas Matriculadas</h2>
         <JoinClassDialog />

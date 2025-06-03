@@ -70,8 +70,8 @@ export function RoleSelection() {
             title="Aluno"
             description="Acesse monitorias, tire dúvidas e acompanhe seu desempenho acadêmico"
             icon={<GraduationCap className="h-6 w-6" />}
-            selected={selectedRole === 'student'}
-            onClick={() => setSelectedRole('student')}
+            selected={selectedRole === 'STUDENT'}
+            onClick={() => setSelectedRole('STUDENT')}
           />
           
           <RoleCard

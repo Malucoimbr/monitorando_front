@@ -114,7 +114,7 @@ const QuestionsPage = () => {
   };
 
   return (
-    <DashboardLayout userRole="student" title="Minhas Dúvidas">
+    <DashboardLayout userRole="STUDENT" title="Minhas Dúvidas">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
         <Card className="card-hover">
           <CardHeader className="pb-2">

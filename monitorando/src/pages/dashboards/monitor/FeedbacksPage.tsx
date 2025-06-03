@@ -169,7 +169,7 @@ const FeedbacksPage = () => {
                 <p className="text-xs text-muted-foreground">Nota média</p>
                 <div className="flex mt-1">
                   {Array(5).fill(0).map((_, i) => (
-                    <span key={i} className={`text-sm ${i < Math.round(calculateAverageRating()) ? "text-yellow-500" : "text-gray-300"}`}>★</span>
+                    <span key={i} className={`text-sm ${i < Math.round(Number(calculateAverageRating())) ? "text-yellow-500" : "text-gray-300"}`}>★</span>
                   ))}
                 </div>
               </div>

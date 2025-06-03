@@ -91,7 +91,7 @@ const HistoryPage = () => {
   };
 
   return (
-    <DashboardLayout userRole="student" title="Meu Histórico de Atendimentos">
+    <DashboardLayout userRole="STUDENT" title="Meu Histórico de Atendimentos">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
         <Card className="card-hover">
           <CardHeader className="pb-2">

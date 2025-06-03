@@ -235,19 +235,19 @@ const Register = () => {
                         <FormControl>
                           <div className={`
                             flex flex-col items-center justify-center p-4 rounded-lg border-2
-                            ${field.value === "professor" 
+                            ${field.value === "PROFESSOR" 
                               ? "border-monitorando-500 bg-monitorando-50" 
                               : "border-border hover:border-monitorando-300"}
                             transition-all cursor-pointer
                           `}
-                            onClick={() => field.onChange("professor")}
+                            onClick={() => field.onChange("PROFESSOR")}
                           >
                             <RadioGroupItem 
-                              value="professor" 
-                              id="professor" 
+                              value="PROFESSOR"
+                              id="PROFESSOR"
                               className="sr-only"
                             />
-                            <BookOpen className={`h-8 w-8 mb-2 ${field.value === "professor" ? "text-monitorando-500" : "text-muted-foreground"}`} />
+                            <BookOpen className={`h-8 w-8 mb-2 ${field.value === "PROFESSOR" ? "text-monitorando-500" : "text-muted-foreground"}`} />
                             <div className="font-medium">Professor</div>
                           </div>
                         </FormControl>
