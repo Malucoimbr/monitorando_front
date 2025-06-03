@@ -16,15 +16,6 @@ const Index = () => {
     <div className='min-h-screen bg-background'>
       <Navbar />
       <Hero />
-      <Container className="py-12 text-center">
-        <Button 
-          size="lg" 
-          onClick={handleGetStarted}
-          className="bg-monitorando-500 hover:bg-monitorando-600"
-        >
-          Começar Agora
-        </Button>
-      </Container>
     </div>
   );
 };
