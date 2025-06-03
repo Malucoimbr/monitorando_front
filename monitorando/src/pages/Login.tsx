@@ -23,11 +23,10 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Basic validation
     if (!email || !password) {
       toast({
         title: "Campos obrigatórios",
@@ -38,35 +37,44 @@ const Login = () => {
       return;
     }
 
-    // Mock login logic - in a real app, this would connect to an API
-    setTimeout(() => {
-      let role = "";
-      
-      // Simple role determination based on email (just for demo)
-      if (email.includes("aluno") || email.includes("student")) {
-        role = "student";
-      } else if (email.includes("monitor")) {
-        role = "monitor";
-      } else if (email.includes("prof") || email.includes("professor")) {
-        role = "professor";
-      } else {
-        // Default to student role
-        role = "student";
+    try {
+      const response = await fetch("http://localhost:8080/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao fazer login");
       }
 
-      // Store user info (in a real app, this would include a token)
-      localStorage.setItem("userRole", role);
-      
+      const data = await response.json();
+
+      localStorage.setItem("userId", data.id);
+      localStorage.setItem("userName", data.name);
+      localStorage.setItem("userSurname", data.surname);
+      localStorage.setItem("userEmail", data.email);
+      localStorage.setItem("userRole", data.role);
+
       toast({
         title: "Login realizado com sucesso",
         description: "Bem-vindo ao Monitorando!",
       });
-      
-      // Redirect based on role
-      navigate(`/dashboard/${role}`);
+
+      navigate(`/dashboard/${data.role}`);
+    } catch (error) {
+      toast({
+        title: "Erro no login",
+        description: "Verifique suas credenciais e tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
