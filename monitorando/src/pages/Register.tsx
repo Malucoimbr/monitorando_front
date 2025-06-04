@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -28,7 +27,8 @@ import {
 import { toast } from "@/components/ui/use-toast";
 
 const registerSchema = z.object({
-  name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  surname: z.string().min(2, "Sobrenome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   confirmPassword: z.string().min(6, "Confirme sua senha"),
@@ -40,6 +40,19 @@ const registerSchema = z.object({
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+// Tipos para a API
+interface UserRegisterRequest {
+  name: string;
+  surname: string;
+  email: string;
+  password: string;
+  role: "STUDENT" | "PROFESSOR";
+}
+
+interface UserRegisterResponse {
+  message: string;
+}
+
 const Register = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,6 +61,7 @@ const Register = () => {
     resolver: zodResolver(registerSchema),
     defaultValues: {
       name: "",
+      surname: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -57,46 +71,120 @@ const Register = () => {
 
   const onSubmit = async (data: RegisterFormValues) => {
     setIsSubmitting(true);
+    
+    console.log("🚀 Iniciando cadastro com dados:", {
+      name: data.name,
+      surname: data.surname,
+      email: data.email,
+      role: data.role
+    });
+
     try {
+      const requestBody: UserRegisterRequest = {
+        name: data.name.trim(),
+        surname: data.surname.trim(),
+        email: data.email.trim().toLowerCase(),
+        password: data.password,
+        role: data.role
+      };
+
+      console.log("📤 Enviando requisição para:", "http://localhost:8080/users/register");
+      console.log("📦 Payload:", { ...requestBody, password: "[HIDDEN]" });
+
       const response = await fetch("http://localhost:8080/users/register", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Accept": "application/json"
         },
-        body: JSON.stringify({
-          name: data.name,
-          surname: data.name,
-          email: data.email,
-          password: data.password,
-          role: data.role
-        })
+        body: JSON.stringify(requestBody)
       });
 
+      console.log("📨 Status da resposta:", response.status);
+      console.log("📨 Headers da resposta:", Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
-        throw new Error("Erro ao registrar usuário");
+        let errorMessage = "Erro ao registrar usuário";
+        let errorDetails = "";
+        
+        try {
+          const errorText = await response.text();
+          console.log("❌ Resposta de erro (texto):", errorText);
+          
+          // Tenta parsear como JSON
+          const errorData = JSON.parse(errorText);
+          console.log("❌ Resposta de erro (JSON):", errorData);
+          
+          errorMessage = errorData.message || errorData.error || errorMessage;
+          errorDetails = errorData.details || "";
+        } catch (parseError) {
+          console.log("❌ Não conseguiu parsear erro como JSON:", parseError);
+          errorDetails = `Status: ${response.status} - ${response.statusText}`;
+          
+          if (response.status === 0) {
+            errorMessage = "Erro de conexão. Verifique se o backend está rodando.";
+          } else if (response.status === 400) {
+            errorMessage = "Dados inválidos. Verifique as informações.";
+          } else if (response.status === 409) {
+            errorMessage = "Email já cadastrado. Tente com outro email.";
+          } else if (response.status === 403) {
+            errorMessage = "Acesso negado. Problema de CORS?";
+          } else if (response.status >= 500) {
+            errorMessage = "Erro interno do servidor.";
+          }
+        }
+        
+        throw new Error(`${errorMessage} ${errorDetails}`);
       }
 
-      const result = await response.json();
+      const responseText = await response.text();
+      console.log("✅ Resposta de sucesso (texto):", responseText);
+      
+      let result: UserRegisterResponse;
+      try {
+        result = JSON.parse(responseText);
+        console.log("✅ Resposta de sucesso (JSON):", result);
+      } catch {
+        // Se não conseguir parsear, assume sucesso com mensagem padrão
+        result = { message: "Usuário registrado com sucesso!" };
+      }
 
       toast({
         title: "Cadastro realizado com sucesso!",
         description: `Bem-vindo(a), ${data.name}!`,
       });
 
-      navigate(data.role === "STUDENT" ? "/dashboard/student" : "/dashboard/professor");
+      console.log("🎉 Cadastro realizado com sucesso!");
+
+      // Redireciona após sucesso
+      setTimeout(() => {
+        navigate(data.role === "STUDENT" ? "/dashboard/student" : "/dashboard/professor");
+      }, 1500);
 
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error("❌ Erro completo:", error);
+      
+      let errorMessage = "Erro desconhecido";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      // Verifica se é erro de rede/CORS
+      if (errorMessage.includes("Failed to fetch") || errorMessage.includes("NetworkError")) {
+        errorMessage = "Erro de conexão. Verifique se o backend está rodando na porta 8080 e se o CORS está configurado.";
+      }
+      
       toast({
         title: "Erro no cadastro",
-        description: "Ocorreu um erro ao tentar fazer o cadastro. Tente novamente.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -116,14 +204,37 @@ const Register = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome completo</FormLabel>
+                  <FormLabel>Nome</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input 
                         {...field} 
-                        placeholder="Seu nome completo" 
+                        placeholder="Seu nome" 
                         className="pl-10"
+                        autoComplete="given-name"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="surname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sobrenome</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input 
+                        {...field} 
+                        placeholder="Seu sobrenome" 
+                        className="pl-10"
+                        autoComplete="family-name"
                       />
                     </div>
                   </FormControl>
@@ -146,6 +257,7 @@ const Register = () => {
                         type="email" 
                         placeholder="seu.email@exemplo.com" 
                         className="pl-10"
+                        autoComplete="email"
                       />
                     </div>
                   </FormControl>
@@ -168,6 +280,7 @@ const Register = () => {
                         type="password" 
                         placeholder="Sua senha" 
                         className="pl-10"
+                        autoComplete="new-password"
                       />
                     </div>
                   </FormControl>
@@ -190,6 +303,7 @@ const Register = () => {
                         type="password" 
                         placeholder="Confirme sua senha" 
                         className="pl-10"
+                        autoComplete="new-password"
                       />
                     </div>
                   </FormControl>
